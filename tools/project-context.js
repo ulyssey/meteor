@@ -214,6 +214,9 @@ _.extend(ProjectContext.prototype, {
     // more efficient by caching or memoizing its work.  We choose not
     // to reset this when reset() is called more than once.
     self._resolverResultCache = (self._resolverResultCache || {});
+
+    // Are we running unit tests for this app?
+    self.testApp = options.testApp;
   },
 
   readProjectMetadata: function () {

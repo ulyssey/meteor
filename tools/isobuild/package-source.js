@@ -1277,6 +1277,7 @@ _.extend(PackageSource.prototype, {
             ignoreFiles,
             isApp: true,
             loopChecker: new SymlinkLoopChecker(self.sourceRoot),
+            testApp: projectContext.testApp
           };
 
           return {
@@ -1345,6 +1346,7 @@ _.extend(PackageSource.prototype, {
     arch,
     loopChecker = new SymlinkLoopChecker(this.sourceRoot),
     ignoreFiles = [],
+    testApp
   }) {
     const sourceReadOptions =
       sourceProcessorSet.appReadDirectoryOptions(arch);
@@ -1371,7 +1373,9 @@ _.extend(PackageSource.prototype, {
     );
 
     const anyLevelExcludes = [
-      /^tests\/$/,
+      // ignore tests/ unless we're running app unit tests
+      ...(testApp ? [] : [/^tests\/$/]),
+
       /^node_modules\/$/,
       arch === "os" ? /^client\/$/ : /^server\/$/,
       ...sourceReadOptions.exclude

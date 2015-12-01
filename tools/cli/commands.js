@@ -260,6 +260,7 @@ var runCommandOptions = {
     'raw-logs': { type: Boolean },
     settings: { type: String },
     test: {type: Boolean, default: false},
+    'test-app': { type: Boolean, 'default': false },
     verbose: { type: Boolean, short: "v" },
     // With --once, meteor does not re-run the project if it crashes
     // and does not monitor for file changes. Intentionally
@@ -292,7 +293,8 @@ function doRunCommand(options) {
   var projectContext = new projectContextModule.ProjectContext({
     projectDir: options.appDir,
     allowIncompatibleUpdate: options['allow-incompatible-update'],
-    lintAppAndLocalPackages: !options['no-lint']
+    lintAppAndLocalPackages: !options['no-lint'],
+    testApp: options['test-app']
   });
 
   main.captureAndExit("=> Errors while initializing project:", function () {
@@ -376,6 +378,19 @@ function doRunCommand(options) {
     cordovaRunner: cordovaRunner
   });
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// test
+///////////////////////////////////////////////////////////////////////////////
+
+main.registerCommand(_.extend(
+  { name: 'test-app' },
+  runCommandOptions
+), function (options) {
+  // meteor run --test-app
+  options['test-app'] = true;
+  return doRunCommand(options);
+});
 
 ///////////////////////////////////////////////////////////////////////////////
 // debug
