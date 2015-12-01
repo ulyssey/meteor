@@ -297,7 +297,8 @@ _.extend(ProjectContext.prototype, {
 
       // Read .meteor/packages.
       self.projectConstraintsFile = new exports.ProjectConstraintsFile({
-        projectDir: self.projectDir
+        projectDir: self.projectDir,
+        inAppTest: self.testApp
       });
       if (buildmessage.jobHasMessages())
         return;
@@ -781,6 +782,8 @@ exports.ProjectConstraintsFile = function (options) {
   self._constraintLines = null;
   // Maps from package name to entry in _constraintLines.
   self._constraintMap = null;
+  // Are we running an app test? (if so, add the tinytest-harness package)
+  self._inAppTest = options.inAppTest;
   self._readFile();
 };
 
@@ -802,6 +805,10 @@ _.extend(exports.ProjectConstraintsFile.prototype, {
       throw Error("packages file missing: " + self.filename);
 
     var lines = files.splitBufferToLines(contents);
+    if (this._inAppTest) {
+      lines.push("tinytest-harness");
+    }
+
     // Don't keep a record for the space at the end of the file.
     if (lines.length && _.last(lines) === '')
       lines.pop();
