@@ -33,6 +33,7 @@ header {
 
 #login-buttons {
   display: block;
+  position: absolute;
 }
 
 h1 {
@@ -63,7 +64,7 @@ form {
   outline: 0;
 }
 
-ul {
+ul.tasks-list{
   margin: 0;
   padding: 0;
   background: white;
@@ -78,15 +79,16 @@ ul {
   position: relative;
 }
 
-li {
+li.task {
   position: relative;
   list-style: none;
   padding: 15px;
   border-bottom: #eee solid 1px;
 }
 
-li .text {
+li.text {
   margin-left: 10px;
+  list-style: none;
 }
 
 li.checked {
@@ -102,12 +104,20 @@ li.private {
   border-color: #ddd;
 }
 
-header .hide-completed {
+header .menu {
   float: right;
+  position: relative;
+  margin: 0;
+  display: inline-block;
 }
 
-.toggle-private {
-  margin-left: 5px;
+header ul{
+  margin: 0;
+}
+
+header li{
+  list-style: none;
+  padding: 0px;
 }
 
 @media (max-width: 600px) {

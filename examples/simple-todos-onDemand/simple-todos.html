@@ -6,10 +6,23 @@
   <div class="container">
     <header>
       <h1>Todo List ({{incompleteCount}})</h1>
-
-      <label class="hide-completed">
-        <input type="checkbox" checked="{{hideCompleted}}" />
-        Hide Completed Tasks
+      <label class="menu">
+        <ul>
+          <li>
+            <label class="hide-completed">
+              <input type="checkbox" checked="{{hideCompleted}}" />
+              Hide Completed Tasks
+            </label>
+          </li>
+        {{#if currentUser}}
+          <li>
+            <label class="show-private-tags">
+              <input type="checkbox" checked="{{showPrivateTags}}" />
+              Show private/public tags
+            </label>
+          </li>
+        {{/if}}
+        </ul>
       </label>
 
       {{> loginButtons}}
@@ -21,7 +34,7 @@
       {{/if}}
     </header>
 
-    <ul>
+    <ul class="tasks-list">
       {{#each tasks}}
         {{> task}}
       {{/each}}
@@ -30,19 +43,13 @@
 </body>
 
 <template name="task">
-  <li class="{{#if checked}}checked{{/if}} {{#if private}}private{{/if}}">
+  <li class="task {{#if checked}}checked{{/if}} {{#if private}}private{{/if}}">
     <button class="delete">&times;</button>
 
     <input type="checkbox" checked="{{checked}}" class="toggle-checked" />
 
-    {{#if isOwner}}
-      <button class="toggle-private">
-        {{#if private}}
-          Private
-        {{else}}
-          Public
-        {{/if}}
-      </button>
+    {{#if showPrivateTag}}
+      {{> privateTag}}
     {{/if}}
 
     <span class="text"><strong>{{username}}</strong> - {{text}}</span>
