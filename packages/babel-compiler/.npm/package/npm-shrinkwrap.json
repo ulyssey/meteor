@@ -336,14 +336,14 @@
         "uglify-to-browserify": {
           "version": "1.0.2"
         },
-        "user-home": {
-          "version": "1.1.1"
-        },
         "void-elements": {
           "version": "2.0.1"
         },
         "window-size": {
           "version": "0.1.0"
+        },
+        "user-home": {
+          "version": "1.1.1"
         },
         "wordwrap": {
           "version": "0.0.3"
