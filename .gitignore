@@ -21,3 +21,8 @@ npm-debug.log
 universe
 .babel-cache
 mongo-test-output
+packages/minifiers-css/
+packages/minifiers-js/
+packages/modules/
+packages/standard-minifiers-css/
+
