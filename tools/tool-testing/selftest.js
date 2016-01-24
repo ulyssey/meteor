@@ -1759,6 +1759,7 @@ var getTestStateFilePath = function () {
 
 var readTestState = function () {
   var testStateFile = getTestStateFilePath();
+  console.log("testStateFile: " + testStateFile);
   var testState;
   if (files.exists(testStateFile))
     testState = JSON.parse(files.readFile(testStateFile, 'utf8'));
