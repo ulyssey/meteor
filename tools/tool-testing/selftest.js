@@ -1759,10 +1759,17 @@ var getTestStateFilePath = function () {
 
 var readTestState = function () {
   var testStateFile = getTestStateFilePath();
-  console.log("testStateFile: " + testStateFile);
   var testState;
   if (files.exists(testStateFile))
-    testState = JSON.parse(files.readFile(testStateFile, 'utf8'));
+    try{
+      testState = JSON.parse(files.readFile(testStateFile, 'utf8'));
+    }
+    catch(e){
+      if (e.name.toString() == "SyntaxError"){
+        console.log("SyntaxError reading file: " + testStateFile);//do something
+      }
+    }
+
   if (! testState || testState.version !== 1)
     testState = { version: 1, lastPassedHashes: {} };
   return testState;
