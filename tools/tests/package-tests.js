@@ -7,6 +7,7 @@ var testUtils = require('../tool-testing/test-utils.js');
 var utils = require('../utils/utils.js');
 var packageClient = require('../packaging/package-client.js');
 var catalog = require('../packaging/catalog/catalog.js');
+import { getUrl } from '../utils/http-helpers.js';
 
 var DEFAULT_RELEASE_TRACK = catalog.DEFAULT_TRACK;
 
@@ -411,6 +412,36 @@ selftest.define("add package with both debugOnly and prodOnly", [], function () 
   run.expectExit(1);
 });
 
+selftest.define("add onDemand package", [], function () {
+  var s = new Sandbox();
+
+  // Add an app with a package with onDemand set:
+  s.createApp("myapp", "on-demand");
+  s.cd("myapp");
+  s.testWithAllClients(function (run) {
+    run.waitSecs(5);
+    run.match('myapp');
+    run.match('proxy');
+    run.match('MongoDB');
+    run.match('app running');
+
+    //the on demand package is not yet loaded:
+    run.forbid('on-demand-package-server');
+    run.forbid('client package loaded');
+    run.waitSecs(10);
+    //the on demand package is loaded:
+    run.match('on-demand-package-server');
+    run.match('server export');
+    run.match('client package loaded');
+    run.match('client package exported');
+    //package is not on demand:
+    run.matchErr('package "not-on-demand" is not on demand');
+
+    run.stop();
+  });
+
+
+});
 
 // Add a package that adds files to specific client architectures.
 selftest.define("add packages client archs", function (options) {
