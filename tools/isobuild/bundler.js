@@ -239,6 +239,7 @@ var NodeModulesDirectory = function (options) {
 // - sourceMap: if 'data' is given, can be given instead of
 //   sourcePath. a string or a JS Object. Will be stored as Object.
 // - cacheable
+// - onDemand: true if Package.describe({'onDemand': true)
 class File {
   constructor (options) {
     if (options.data && ! (options.data instanceof Buffer))
@@ -273,6 +274,9 @@ class File {
     // Is this file guaranteed to never change, so that we can let it be
     // cached forever? Only makes sense of self.url is set.
     this.cacheable = options.cacheable || false;
+
+    //If the package is served on demand
+    this.onDemand = options.onDemand || false;
 
     // The node_modules directory that Npm.require() should search when
     // called from inside this file, given as a NodeModulesDirectory, or
@@ -603,6 +607,7 @@ class Target {
           isopackCache: isopackCache,
           skipDebugOnly: this.buildMode !== 'development',
           skipProdOnly: this.buildMode !== 'production',
+          skipOnDemand: false,
           allowWrongPlatform: this.providePackageJSONForUnavailableBinaryDeps,
         }, addToGetsUsed);
       }.bind(this);
@@ -668,6 +673,7 @@ class Target {
           acceptableWeakPackages: this.usedPackages,
           skipDebugOnly: this.buildMode !== 'development',
           skipProdOnly: this.buildMode !== 'production',
+          skipOnDemand: false,
           allowWrongPlatform: this.providePackageJSONForUnavailableBinaryDeps,
         }, processUnibuild);
         this.unibuilds.push(unibuild);
@@ -712,6 +718,7 @@ class Target {
     // Copy their resources into the bundle in order
     sourceBatches.forEach((sourceBatch) => {
       const unibuild = sourceBatch.unibuild;
+      const onDemand = unibuild.pkg && unibuild.pkg.onDemand;
 
       if (this.cordovaDependencies) {
         _.each(unibuild.pkg.cordovaDependencies, (version, name) => {
@@ -740,7 +747,8 @@ class Target {
           info: 'unbuild ' + resource,
           data: resource.data,
           cacheable: false,
-          hash: resource.hash
+          hash: resource.hash,
+          onDemand: onDemand
         });
 
         const relPath = isOs
@@ -772,7 +780,7 @@ class Target {
             // meteor.js?
             return;
 
-          const f = new File({ info: 'resource ' + resource.servePath, data: resource.data, cacheable: false});
+          const f = new File({ info: 'resource ' + resource.servePath, data: resource.data, cacheable: false, onDemand: onDemand});
 
           const relPath = stripLeadingSlash(resource.servePath);
           f.setTargetPathFromRelPath(relPath);
@@ -894,7 +902,8 @@ class Target {
       return source._minifiedFiles.map((file) => {
         const newFile = new File({
           info: 'minified js',
-          data: new Buffer(file.data, 'utf8')
+          data: new Buffer(file.data, 'utf8'),
+          onDemand: file.onDemand
         });
         if (file.sourceMap) {
           newFile.setSourceMap(file.sourceMap, '/');
@@ -1068,7 +1077,8 @@ class ClientTarget extends Target {
       return source._minifiedFiles.map((file) => {
         const newFile = new File({
           info: 'minified css',
-          data: new Buffer(file.data, 'utf8')
+          data: new Buffer(file.data, 'utf8'),
+          onDemand: file.onDemand
         });
         if (file.sourceMap) {
           newFile.setSourceMap(file.sourceMap, '/');
@@ -1121,6 +1131,7 @@ class ClientTarget extends Target {
         where: "client",
         type: type,
         cacheable: file.cacheable,
+        onDemand: file.onDemand,
         url: file.url
       };
 
@@ -1491,6 +1502,8 @@ class JsImage {
         item.targetPath,
         { data: new Buffer(item.source, 'utf8') });
 
+      loadItem.onDemand = !!item.onDemand;
+
       if (!_.isEmpty(item.assets)) {
         // For package code, static assets go inside a directory inside
         // assets/packages specific to this package. Application assets (e.g. those
@@ -1671,7 +1684,8 @@ class JsImageTarget extends Target {
         nodeModulesDirectory: file.nodeModulesDirectory,
         assets: file.assets,
         sourceMap: file.sourceMap,
-        sourceMapRoot: file.sourceMapRoot
+        sourceMapRoot: file.sourceMapRoot,
+        onDemand: file.onDemand
       });
     });
 

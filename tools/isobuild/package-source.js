@@ -353,6 +353,11 @@ var PackageSource = function () {
   // builds.
   self.prodOnly = false;
 
+  // a package marked onDemand as to be loaded by `Package.load("my-package")`,
+  // then the export symbols will be accessible using
+  // `Package["my-package"].MySymbol`
+  self.onDemand = false;
+
   // If this is set, we will take the currently running git checkout and bundle
   // the meteor tool from it inside this package as a tool. We will include
   // built copies of all known isopackets.
@@ -561,6 +566,10 @@ _.extend(PackageSource.prototype, {
        * meant to be used in development only.
        * @param {Boolean} options.prodOnly A package with this flag set to true
        * will ONLY be bundled into production builds.
+       * @param {Boolean} options.onDemand A package with this flag set to true
+       * will not be loaded for you. To load it use:
+       * `Package.load("my-package")`, to access the exports use:
+       * `Package["my-package"].MySymbol`
        */
       describe: function (options) {
         _.each(options, function (value, key) {
@@ -639,6 +648,12 @@ _.extend(PackageSource.prototype, {
             self.debugOnly = !!value;
           } else if (key === "prodOnly") {
             self.prodOnly = !!value;
+            // `onDemand` is  a boolean flag you can put on a package. When set
+            // to true, you have to load the package using:
+            // `Package.load("my-package")`. Its exports are then accessible
+            // using `Package["my-package"].MySymbol`.
+          } else if (key === "onDemand") {
+            self.onDemand = !!value;
           } else {
             // Do nothing. We might want to add some keys later, and we should err
             // on the side of backwards compatibility.
