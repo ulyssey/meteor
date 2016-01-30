@@ -22,6 +22,9 @@ class InputFile extends buildPluginModule.InputFile {
   getSourceHash() {
     return this._source.hash();
   }
+  getOnDemand() {
+    return !!this._source.onDemand;
+  }
   getArch() {
     return this._arch;
   }
@@ -65,7 +68,8 @@ export class JsFile extends InputFile {
     self._minifiedFiles.push({
       data: options.data,
       sourceMap: options.sourceMap,
-      path: options.path
+      path: options.path,
+      onDemand: self.getOnDemand()
     });
   }
 }
@@ -76,10 +80,12 @@ export class CssFile extends InputFile {
   // - path
   // - hash?
   addStylesheet(options) {
-    this._minifiedFiles.push({
+    const self = this;
+    self._minifiedFiles.push({
       data: options.data,
       sourceMap: options.sourceMap,
-      path: options.path
+      path: options.path,
+      onDemand: self.getOnDemand()
     });
   }
 }

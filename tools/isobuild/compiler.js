@@ -166,6 +166,7 @@ compiler.compile = Profile(function (packageSource, options) {
     includeTool: packageSource.includeTool,
     debugOnly: packageSource.debugOnly,
     prodOnly: packageSource.prodOnly,
+    onDemand: packageSource.onDemand,
     pluginCacheDir: options.pluginCacheDir,
     isobuildFeatures
   });
@@ -671,6 +672,9 @@ function runLinters({inputSourceArch, isopackCache, sources,
     // the code must access them with `Package["my-package"].MySymbol`.
     skipDebugOnly: true,
     skipProdOnly: true,
+    //symbols from onDemand package must be only accessible by
+    // `Package["my-package"].MySymbol`.
+    skipOnDemand: true,
     // We only care about getting exports here, so it's OK if we get the Mac
     // version when we're bundling for Linux.
     allowWrongPlatform: true,
@@ -870,6 +874,11 @@ compiler.eachUsedUnibuild = function (
     }
     // Ditto prodOnly.
     if (usedPackage.prodOnly && options.skipProdOnly) {
+      continue;
+    }
+
+    // Ditto onDemand.
+    if (usedPackage.onDemand && options.skipOnDemand) {
       continue;
     }
 
