@@ -10,15 +10,6 @@ if (Meteor.isServer){
       console.log(Package['on-demand'].onDemand);
     });
   },5000);
-
-  Meteor.methods({
-    packageClientLoaded: function () {
-      console.log('client package loaded');
-    },
-    clientPackageExported: function () {
-      console.log('client package exported');
-    }
-  });
 }
 
 if (Meteor.isClient){
