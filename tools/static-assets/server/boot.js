@@ -132,10 +132,8 @@ var startCheckForLiveParent = function (parentPid) {
   }
 };
 
-
-Fiber(function () {
-  _.each(serverJson.load, function (fileInfo) {
-    var code = fs.readFileSync(path.resolve(serverDir, fileInfo.path));
+var bootOneLoad = function(fileInfo){
+  var code = fs.readFileSync(path.resolve(serverDir, fileInfo.path));
 
     var Npm = {
       /**
@@ -240,8 +238,15 @@ Fiber(function () {
     // what require() uses to generate its errors.
     var func = require('vm').runInThisContext(wrapped, scriptPath, true);
     func.call(global, Npm, Assets); // Coffeescript
-  });
+  };
 
+Fiber(function () {
+  _.each(serverJson.load, function (fileInfo) {
+    //do not boot on-demand packages
+    if(!fileInfo.onDemand){
+      bootOneLoad(fileInfo);
+    }
+  });
   // run the user startup hooks.  other calls to startup() during this can still
   // add hooks to the end.
   while (__meteor_bootstrap__.startupHooks.length) {

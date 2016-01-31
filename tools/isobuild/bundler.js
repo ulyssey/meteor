@@ -101,6 +101,9 @@
 //      of the asset
 //    - sourceMap: if present, path of a file that contains a source
 //      map for this file, relative to program.json
+//    - onDemand: the package can be loaded on the client only after
+//      `OnDemand.load("My-package")` has been call from the server.
+//      Then you can use `OnDemand.load("My-package")` from the client.
 //
 // /config.json:
 //
@@ -132,6 +135,8 @@
 //    - node_modules: if Npm.require is called from this file, this is
 //      the path (relative to program.json) of the directory that should
 //      be search for npm modules
+//    - onDemand: true if the package is started using
+//      `Package.load("My-package")`
 //
 // It's a little odd that architecture is stored twice (in both the
 // top-level star control file and in the plugin control file) but
