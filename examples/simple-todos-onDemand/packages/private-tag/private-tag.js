@@ -19,3 +19,5 @@ Meteor.methods({
   Tasks.update(taskId, { $set: { private: setToPrivate } });
 }
 });
+
+console.log("private-tag package loaded");

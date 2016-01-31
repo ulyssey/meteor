@@ -6,10 +6,13 @@ if (Meteor.isServer) {
   Meteor.publish("tasks", function () {
     return Tasks.find({
       $or: [
-        { private: {$ne: true} },
-        { owner: this.userId }
+        {private: {$ne: true}},
+        {owner: this.userId}
       ]
     });
+  });
+  Meteor.startup (function () {
+    OnDemand.load("ulyssey:private-tag");
   });
 }
 

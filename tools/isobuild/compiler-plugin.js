@@ -541,7 +541,7 @@ _.extend(PackageSourceBatch.prototype, {
       arch: bundleArch,
       isopackCache: isopackCache,
       skipUnordered: true,
-      // don't import symbols from debugOnly, prodOnly  and onDemand packages,
+      // don't import symbols from debugOnly, prodOnly and onDemand packages,
       // because if the package is not linked it will cause a runtime error.
       // the code must access them with `Package["my-package"].MySymbol`.
       skipDebugOnly: true,
