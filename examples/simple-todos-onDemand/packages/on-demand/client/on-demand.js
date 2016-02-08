@@ -35,7 +35,10 @@ OnDemand.load = function (packageName, callback) {
       OnDemand.loaded[packageName] = true;
     }
     console.log(packageName + ' loaded');
-    callback(err, res);
+    //live time for handlebar to take in account a new template
+    callback && Meteor.setTimeout(function () {
+      callback(err, res);
+    },100);
   });
 };
 
