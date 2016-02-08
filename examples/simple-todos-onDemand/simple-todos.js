@@ -12,7 +12,14 @@ if (Meteor.isServer) {
     });
   });
   Meteor.startup (function () {
-    OnDemand.load("ulyssey:private-tag");
+    console.log("waiting to load 'private-tag'");
+    Meteor.setTimeout(function () {
+        console.log("still waiting'");
+      },500);
+    Meteor.setTimeout(function () {
+      OnDemand.load("ulyssey:private-tag");
+    },1000);
+
   });
 }
 
@@ -59,6 +66,11 @@ if (Meteor.isClient) {
       Session.set("hideCompleted", event.target.checked);
     },
     "change .menu .show-private-tags input": function (event) {
+      console.log('OnDemand.loaded["showPrivateTags"]:' + OnDemand.loaded["showPrivateTags"]);
+      if (!OnDemand.loaded["showPrivateTags"]){
+        console.log("privateTags loading");
+        OnDemand.load("ulyssey:private-tag");
+      }
       Session.set("showPrivateTags", event.target.checked);
     }
   });
@@ -83,6 +95,7 @@ if (Meteor.isClient) {
   Accounts.ui.config({
     passwordSignupFields: "USERNAME_ONLY"
   });
+
 }
 
 Meteor.methods({

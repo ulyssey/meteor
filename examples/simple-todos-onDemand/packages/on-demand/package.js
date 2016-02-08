@@ -13,9 +13,10 @@ Package.describe({
 Package.onUse(function(api) {
 //  api.versionsFrom('1.2.1');
   api.use(['ecmascript', 'underscore', 'package-version-parser']);
-  api.addFiles('mini-files.js');
-  api.addFiles('on-demand.js');
-  api.export('OnDemand', 'server');
+  api.addFiles('server/mini-files.js', 'server');
+  api.addFiles('server/on-demand.js', 'server');
+  api.addFiles('client/on-demand.js', 'client');
+  api.export('OnDemand');
 });
 
 Package.onTest(function(api) {
