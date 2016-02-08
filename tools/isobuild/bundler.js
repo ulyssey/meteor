@@ -238,6 +238,7 @@ var NodeModulesDirectory = function (options) {
 ///////////////////////////////////////////////////////////////////////////////
 
 // Allowed options:
+// - pacakgeName: The package's name from which the file is from
 // - sourcePath: path to file on disk that will provide our contents
 // - data: contents of the file as a Buffer
 // - hash: optional, sha1 hash of the file contents, if known
@@ -253,6 +254,9 @@ class File {
     if (! options.sourcePath && ! options.data) {
       throw new Error("Must provide either sourcePath or data");
     }
+
+    // The package's name from which the file is from
+    this.packageName = options.packageName;
 
     // The absolute path in the filesystem from which we loaded (or will
     // load) this file (null if the file does not correspond to one on
@@ -749,6 +753,8 @@ class Target {
     // Copy their resources into the bundle in order
     sourceBatches.forEach((sourceBatch) => {
       const unibuild = sourceBatch.unibuild;
+      const packageName =
+        (unibuild.pkg && unibuild.pkg.name) ? unibuild.pkg.name : '';
       const onDemand = unibuild.pkg && unibuild.pkg.onDemand;
 
       if (this.cordovaDependencies) {
@@ -777,6 +783,7 @@ class Target {
         }
 
         const f = new File({
+          pacakgeName: packageName,
           info: 'unbuild ' + resource,
           data: resource.data,
           cacheable: false,
@@ -823,7 +830,12 @@ class Target {
             return;
           }
 
-          const f = new File({ info: 'resource ' + resource.servePath, data: resource.data, cacheable: false, onDemand: onDemand});
+          const f = new File({
+            packageName: packageName,
+            info: 'resource ' + resource.servePath,
+            data: resource.data,
+            cacheable: false,
+            onDemand: onDemand});
 
           const relPath = stripLeadingSlash(resource.servePath);
           f.setTargetPathFromRelPath(relPath);
