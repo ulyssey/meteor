@@ -11,42 +11,62 @@ function CssToolsMinifier () {};
 
 CssToolsMinifier.prototype.processFilesForBundle = function (files, options) {
   var mode = options.minifyMode;
-  console.log("minify-css.js called");
   if (! files.length) return;
 
-  //separate onDemand files:
-  var onDemandFiles = [];
-  var normalFiles = [];
+  var cssClassified = {};
+  cssClassified._notOnDemand = {files: [], merged: ''};
+  var packageName = '';
+
   files.forEach(function (file) {
-    console.log(file);
-    if (file._source.onDemand){
-      onDemandFiles.push(file);
-    }
-    else{
-      normalFiles.push(file);
+    if (file._source.onDemand) {
+      packageName = file._source.packageName;
+      packageName =  packageName.replace(':', '_');
+      if (typeof cssClassified[packageName] === 'undefined') {
+        cssClassified[packageName] = {files: [], merged: ''};
+      }
+      cssClassified[packageName].files.push(file);
+    } else {
+      cssClassified._notOnDemand.files.push(file);
     }
   });
 
-  var mergedNormals = mergeCss(normalFiles);
-  console.log("\nfiles in minifyCSs:");
-  console.log(files);
+  var current;
+  for (var property = '' in cssClassified){
+    current = cssClassified[property];
+    current.merged = mergeCss(current.files);
+  }
+
   if (mode === 'development') {
-    files[0].addStylesheet({
-      data: mergedNormals.code,
-      sourceMap: mergedNormals.sourceMap,
-      path: 'merged-stylesheets.css'
-    });
+    for (var property = '' in cssClassified){
+      console.log(property);
+      current = cssClassified[property];
+      current.files[0].addStylesheet({
+        data: current.merged.code,
+        sourceMap: current.merged.sourceMap, //todo check the sourceMap
+        path: (property === '_notOnDemand') ?
+          'merged-stylesheets.css' : property + '.css'
+      });
+    }
     return;
   }
 
-  var minifiedFiles = CssTools.minifyCss(mergedNormals.code);
 
+
+  //todo
+  //todo : test in production mode:
+  //todo
+
+  var minifiedFiles;
   if (files.length) {
-    minifiedFiles.forEach(function (minified) {
-      files[0].addStylesheet({
-        data: minified
+    for (var property = '' in cssClassified){
+      current = cssClassified[property];
+      minifiedFiles = CssTools.minifyCss(current.merged.code);
+      minifiedFiles.forEach(function (minified) {
+        current.files[0].addStylesheet({
+          data: minified
+        });
       });
-    });
+    }
   }
 };
 
