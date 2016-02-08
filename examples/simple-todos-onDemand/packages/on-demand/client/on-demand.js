@@ -2,7 +2,7 @@
  * Created by yoh on 2/1/16.
  */
 OnDemand = {};
-OnDemand.loaded = {};
+OnDemand._loaded = {};
 
 
 
@@ -32,7 +32,7 @@ OnDemand.load = function (packageName, callback) {
     else{
       console.log(res);
       loadjscssfile(res.url, res.type);
-      OnDemand.loaded[packageName] = true;
+      OnDemand._loaded[packageName] = true;
     }
     console.log(packageName + ' loaded');
     //live time for handlebar to take in account a new template
@@ -40,5 +40,9 @@ OnDemand.load = function (packageName, callback) {
       callback(err, res);
     },100);
   });
+};
+
+OnDemand.loaded = function (packageName) {
+  return this._loaded[packageName];
 };
 
