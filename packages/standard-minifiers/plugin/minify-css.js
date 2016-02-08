@@ -11,25 +11,26 @@ function CssToolsMinifier () {};
 
 CssToolsMinifier.prototype.processFilesForBundle = function (files, options) {
   var mode = options.minifyMode;
-  console.log("minify-css.js called");
   if (! files.length) return;
 
   //separate onDemand files:
-  var onDemandFiles = [];
+  var onDemandFiles = {};
   var normalFiles = [];
+  var packageName = '';
   files.forEach(function (file) {
-    console.log(file);
-    if (file._source.onDemand){
-      onDemandFiles.push(file);
-    }
-    else{
+    if (file._source.onDemand) {
+      packageName = file._source.packageName;
+      if (typeof onDemandFiles[packageName] === 'undefined') {
+        onDemandFiles[packageName] = [];
+      }
+      onDemandFiles[packageName].push(file);
+    } else {
       normalFiles.push(file);
     }
   });
 
   var mergedNormals = mergeCss(normalFiles);
-  console.log("\nfiles in minifyCSs:");
-  console.log(files);
+
   if (mode === 'development') {
     files[0].addStylesheet({
       data: mergedNormals.code,
