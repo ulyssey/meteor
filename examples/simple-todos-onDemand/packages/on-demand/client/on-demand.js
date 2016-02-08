@@ -7,17 +7,19 @@ OnDemand._loaded = {};
 
 
 //todo: find where this implantation is from:
-function loadjscssfile(filename, filetype){
-  if (filetype=="js"){ //if filename is a external JavaScript file
+function loadjscssfile(fileInfo){
+  var fileName = fileInfo.url;
+  var fileType = fileInfo.type;
+  if (fileType === "js"){ //if fileName is a external JavaScript file
     var fileref = document.createElement('script')
     fileref.setAttribute("type","text/javascript")
-    fileref.setAttribute("src", filename)
+    fileref.setAttribute("src", fileName)
   }
-  else if (filetype=="css"){ //if filename is an external CSS file
+  else if (fileType === "css"){ //if fileName is an external CSS file
     var fileref=document.createElement("link")
     fileref.setAttribute("rel", "stylesheet")
     fileref.setAttribute("type", "text/css")
-    fileref.setAttribute("href", filename)
+    fileref.setAttribute("href", fileName)
   }
   if (typeof fileref!="undefined")
     document.getElementsByTagName("head")[0].appendChild(fileref)
@@ -31,11 +33,12 @@ OnDemand.load = function (packageName, callback) {
     }
     else{
       console.log(res);
-      loadjscssfile(res.url, res.type);
+      res.js && loadjscssfile(res.js);
+      res.css && loadjscssfile(res.css);
       OnDemand._loaded[packageName] = true;
     }
     console.log(packageName + ' loaded');
-    //live time for handlebar to take in account a new template
+    //delay for handlebar to take in account a new template
     callback && Meteor.setTimeout(function () {
       callback(err, res);
     },100);

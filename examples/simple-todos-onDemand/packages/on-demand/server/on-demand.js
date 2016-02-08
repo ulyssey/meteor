@@ -94,6 +94,7 @@ OnDemand.load = function(packageName){
   var program = Meteor.wrapAsync(fs.readFile)(programDir, 'utf8');
   var manifest = EJSON.parse(program).manifest;
   var last;
+
   var result = _.find(manifest, function (item) {
     last = item;
     return item.path === "packages/" + packageName + ".js";
@@ -102,9 +103,11 @@ OnDemand.load = function(packageName){
     throw new Meteor.Error('package name do not exist');
   }
 
-  OnDemand.Packages[packageName] = {
-    type: result.type,
-    url: result.url
+  OnDemand.Packages[packageName]= {
+    js:{
+      type: result.type,
+      url: result.url
+    }
   };
   console.log("OnDemand.Packages[ " + packageName + " ]: " + OnDemand.Packages[packageName]);
   console.log("server package loaded");
