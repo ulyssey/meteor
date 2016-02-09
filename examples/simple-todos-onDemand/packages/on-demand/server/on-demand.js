@@ -10,17 +10,17 @@ var configJson =
   JSON.parse(fs.readFileSync(path.resolve(serverDir, 'config.json'), 'utf8'));
 
 OnDemand = {};
-OnDemand.Packages = {};
+OnDemand.clientPackages = {};
 OnDemand._conditions = {};
 
 
 OnDemand.load = function(packageName){
   //first load server files
   PackageVersion.validatePackageName(packageName);
-  packageName =  packageName.replace(':', '_');
+  var packageName_ =  packageName.replace(':', '_');
 
   var fileInfo = _.find(serverJson.load, function (fileInfo) {
-    return fileInfo.path === "packages/" + packageName + ".js";
+    return fileInfo.path === "packages/" + packageName_ + ".js";
   });
 
   if (typeof fileInfo === 'undefined'){
@@ -93,55 +93,57 @@ OnDemand.load = function(packageName){
   var programDir = serverDir.replace(/server$/, 'web.browser') + '/program.json';
   var program = Meteor.wrapAsync(fs.readFile)(programDir, 'utf8');
   var manifest = EJSON.parse(program).manifest;
-  var last;
 
-  var result = _.find(manifest, function (item) {
-    last = item;
-    return item.path === "packages/" + packageName + ".js";
-  });
+  result = _.chain(manifest)
+    .filter(function (item) {
+      return item.path.indexOf(packageName_) > -1;
+    })
+    .map(function (item) {
+      return _.pick(item, "type", "url");
+    })
+    .value();
+
   if (typeof result === 'undefined'){
     throw new Meteor.Error('package name do not exist');
   }
-
-  OnDemand.Packages[packageName]= {
-    js:{
-      type: result.type,
-      url: result.url
-    }
-  };
-  console.log("OnDemand.Packages[ " + packageName + " ]: " + OnDemand.Packages[packageName]);
-  console.log("server package loaded");
+  OnDemand.clientPackages[packageName] = result;
 };
 
 Meteor.methods({
   onDemandLoadPackage: function (packageName) {
+    debugger;
     PackageVersion.validatePackageName(packageName);
-    packageName =  packageName.replace(':', '_');
+    //packageName =  packageName.replace(':', '_');
 
-    var condition = OnDemand._conditions[packageName] ?
-      OnDemand._conditions[packageName] : true;
 
-    if(((typeof condition === 'function') && condition()) ||
+    var condition = typeof OnDemand._conditions[packageName] === 'undefined'  ?
+      false : OnDemand._conditions[packageName];
+
+    if(((typeof condition === 'function') && condition.apply(this)) ||
     ((typeof condition === 'boolean') && condition)){
 
-      console.log("OnDemand.Packages: " + OnDemand.Packages);
-      console.log("OnDemand.Packages[ " + packageName + " ]: " + OnDemand.Packages[packageName]);
-      if(typeof OnDemand.Packages[packageName] === 'undefined'){
+      if(typeof OnDemand.clientPackages[packageName] === 'undefined'){
         OnDemand.load(packageName);
       }
-      return OnDemand.Packages[packageName];
+      return OnDemand.clientPackages[packageName];
 
     }else{
-      throw new Meteor.Error('package can not be loaded');
+      new Meteor.Error('package can not be loaded');
     }
   }
 });
 
 OnDemand.conditions = function (conditions) {
-  //todo: test that each property is either a boolean or a function
-  //todo replace all package names using:
-  // PackageVersion.validatePackageName(packageName);
-  // packageName =  packageName.replace(':', '_');
-  OnDemand._conditions = conditions;
+  for ( var packageName in conditions){
+    if( conditions.hasOwnProperty( packageName ) ){
+      PackageVersion.validatePackageName(packageName);
+
+      if ((typeof conditions[packageName] !== 'function') &&
+        (typeof conditions[packageName] !== 'boolean')){
+        throw new Error('invalid packageName');
+      }
+      OnDemand._conditions[packageName] = conditions[packageName];
+    }
+  }
 };
 

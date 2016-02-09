@@ -27,14 +27,16 @@ function loadjscssfile(fileInfo){
 
 OnDemand.load = function (packageName, callback) {
   Meteor.call("onDemandLoadPackage", packageName, function (err, res) {
+
     console.log(packageName + ' loading');
     if(err){
       console.log(res);
     }
     else{
       console.log(res);
-      res.js && loadjscssfile(res.js);
-      res.css && loadjscssfile(res.css);
+      res.forEach(function (fileInfo) {
+        loadjscssfile(fileInfo);
+      });
       OnDemand._loaded[packageName] = true;
     }
     console.log(packageName + ' loaded');

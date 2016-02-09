@@ -11,6 +11,7 @@ if (Meteor.isServer) {
       ]
     });
   });
+
   Meteor.startup (function () {
     console.log("waiting to load 'private-tag'");
     Meteor.setTimeout(function () {
@@ -19,7 +20,12 @@ if (Meteor.isServer) {
     Meteor.setTimeout(function () {
       OnDemand.load("ulyssey:private-tag");
     },1000);
+  });
 
+  OnDemand.conditions({
+    'ulyssey:private-tag': function () {
+      return Meteor.user().username === 'chris';
+    }
   });
 }
 
