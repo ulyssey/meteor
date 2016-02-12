@@ -17,10 +17,10 @@ CssToolsMinifier.prototype.processFilesForBundle = function (files, options) {
   cssClassified._notOnDemand = {files: [], merged: ''};
   var packageName = '';
 
+  //classify css files by package:
   files.forEach(function (file) {
     if (file._source.onDemand) {
       packageName = file._source.packageName;
-      packageName =  packageName.replace(':', '_');
       if (typeof cssClassified[packageName] === 'undefined') {
         cssClassified[packageName] = {files: [], merged: ''};
       }
@@ -49,12 +49,6 @@ CssToolsMinifier.prototype.processFilesForBundle = function (files, options) {
     }
     return;
   }
-
-
-
-  //todo
-  //todo : test in production mode:
-  //todo
 
   var minifiedFiles;
   if (files.length) {

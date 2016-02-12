@@ -8,16 +8,13 @@ if (Meteor.isClient){
 
 Meteor.methods({
   setPrivate: function (taskId, setToPrivate) {
-  var task = Tasks.findOne(taskId);
-    console.log(task);
+    var task = Tasks.findOne(taskId);
 
-  // Make sure only the task owner can make a task private
-  if (task.owner !== Meteor.userId()) {
-    throw new Meteor.Error("not-authorized");
+    // Make sure only the task owner can make a task private
+    if (task.owner !== Meteor.userId()) {
+      throw new Meteor.Error("not-authorized");
+    }
+
+    Tasks.update(taskId, { $set: { private: setToPrivate } });
   }
-
-  Tasks.update(taskId, { $set: { private: setToPrivate } });
-}
 });
-//throw new Error();
-console.log("private-tag package loaded");
