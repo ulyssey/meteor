@@ -17,7 +17,7 @@ class InputFile extends buildPluginModule.InputFile {
     throw new Error("Compiled files don't belong to any package");
   }
   getPackageName() {
-    throw new Error("Compiled files don't belong to any package");
+    return this._source.onDemand ? this._source.packageName : '';
   }
   getSourceHash() {
     return this._source.hash();
@@ -66,6 +66,7 @@ export class JsFile extends InputFile {
   addJavaScript(options) {
     const self = this;
     self._minifiedFiles.push({
+      packageName: self.getPackageName(),
       data: options.data,
       sourceMap: options.sourceMap,
       path: options.path,
@@ -82,6 +83,7 @@ export class CssFile extends InputFile {
   addStylesheet(options) {
     const self = this;
     self._minifiedFiles.push({
+      packageName: self.getPackageName(),
       data: options.data,
       sourceMap: options.sourceMap,
       path: options.path,
