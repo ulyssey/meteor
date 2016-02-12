@@ -22,6 +22,24 @@ UglifyJSMinifier.prototype.processFilesForBundle = function (files, options) {
     return;
   }
 
+  var jsClassified = {};
+  jsClassified._notOnDemand = {files: []};
+  var packageName = '';
+  
+  //classify js files by package:
+  files.forEach(function (file) {
+    if (file._source.onDemand) {
+      packageName = file._source.packageName;
+      console.log("package onDemand: " + packageName);
+      if (typeof jsClassified[packageName] === 'undefined') {
+        jsClassified[packageName] = {files: []};
+      }
+      jsClassified[packageName].files.push(file);
+    } else {
+      jsClassified._notOnDemand.files.push(file);
+    }
+  });
+
   var minifyOptions = {
     fromString: true,
     compress: {
@@ -31,16 +49,22 @@ UglifyJSMinifier.prototype.processFilesForBundle = function (files, options) {
     }
   };
 
-  var allJs = '';
-  files.forEach(function (file) {
-    allJs += UglifyJSMinify(file.getContentsAsString(), minifyOptions).code;
-    allJs += '\n\n';
-
-    Plugin.nudge();
-  });
-
+  var someJs = '';
+ 
   if (files.length) {
-    files[0].addJavaScript({ data: allJs });
+    for (var property = '' in jsClassified){
+      current = jsClassified[property];
+      someJs = '';
+
+      current.files.forEach(function (file) {
+        someJs += UglifyJSMinify(file.getContentsAsString(), minifyOptions).code;
+        someJs += '\n\n';
+
+        Plugin.nudge();
+      });
+
+      current.files[0].addJavaScript({ data: someJs });
+    }
   }
 };
 

@@ -111,10 +111,7 @@ OnDemand.load = function(packageName){
 
 Meteor.methods({
   onDemandLoadPackage: function (packageName) {
-    debugger;
     PackageVersion.validatePackageName(packageName);
-    //packageName =  packageName.replace(':', '_');
-
 
     var condition = typeof OnDemand._conditions[packageName] === 'undefined'  ?
       false : OnDemand._conditions[packageName];

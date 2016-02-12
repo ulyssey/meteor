@@ -72,9 +72,7 @@ if (Meteor.isClient) {
       Session.set("hideCompleted", event.target.checked);
     },
     "change .menu .show-private-tags input": function (event) {
-      console.log('OnDemand._loaded["ulyssey:private-tag"]:' + OnDemand.loaded("ulyssey:private-tag"));
       if (!OnDemand.loaded("ulyssey:private-tag")){
-        console.log("privateTags loading");
         OnDemand.load("ulyssey:private-tag", function () {
           Session.set("showPrivateTags", event.target.checked);
         });
