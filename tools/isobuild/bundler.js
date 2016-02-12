@@ -960,7 +960,8 @@ class Target {
         const newFile = new File({
           info: 'minified js',
           data: new Buffer(file.data, 'utf8'),
-          onDemand: file.onDemand
+          onDemand: file.onDemand,
+          packageName: file.packageName
         });
         if (file.sourceMap) {
           newFile.setSourceMap(file.sourceMap, '/');
@@ -1142,7 +1143,8 @@ class ClientTarget extends Target {
         const newFile = new File({
           info: 'minified css',
           data: new Buffer(file.data, 'utf8'),
-          onDemand: file.onDemand
+          onDemand: file.onDemand,
+          packageName: file.packageName
         });
         if (file.sourceMap) {
           newFile.setSourceMap(file.sourceMap, '/');
@@ -1189,6 +1191,7 @@ class ClientTarget extends Target {
     const manifest = [];
     eachResource((file, type) => {
       const manifestItem = {
+        packageName: file.packageName,
         path: file.targetPath,
         where: "client",
         type: type,
