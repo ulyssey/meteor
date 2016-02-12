@@ -96,7 +96,7 @@ OnDemand.load = function(packageName){
 
   result = _.chain(manifest)
     .filter(function (item) {
-      return item.path.indexOf(packageName_) > -1;
+      return item.packageName === packageName;
     })
     .map(function (item) {
       return _.pick(item, "type", "url");
