@@ -16,7 +16,7 @@ Package.onUse(function(api) {
   api.use('ecmascript');
   api.use('templating', 'client');
   api.addFiles('template.html', 'client');
-  api.addFiles('private-tag.js');
+  api.addFiles('private-tag.js')
   api.addFiles('private-tag.css', 'client');
 });
 

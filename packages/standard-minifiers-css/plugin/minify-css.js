@@ -31,14 +31,14 @@ CssToolsMinifier.prototype.processFilesForBundle = function (files, options) {
   });
 
   var current;
-  for (var property = '' in cssClassified){
+
+  Object.getOwnPropertyNames(cssClassified).forEach(function(property) {
     current = cssClassified[property];
     current.merged = mergeCss(current.files);
-  }
+  });
 
   if (mode === 'development') {
-    for (var property = '' in cssClassified){
-      console.log(property);
+    Object.getOwnPropertyNames(cssClassified).forEach(function(property) {
       current = cssClassified[property];
       current.files[0].addStylesheet({
         data: current.merged.code,
@@ -46,13 +46,13 @@ CssToolsMinifier.prototype.processFilesForBundle = function (files, options) {
         path: (property === '_notOnDemand') ?
           'merged-stylesheets.css' : property + '.css'
       });
-    }
+    });
     return;
   }
 
   var minifiedFiles;
   if (files.length) {
-    for (var property = '' in cssClassified){
+    Object.getOwnPropertyNames(cssClassified).forEach(function(property) {
       current = cssClassified[property];
       minifiedFiles = CssTools.minifyCss(current.merged.code);
       minifiedFiles.forEach(function (minified) {
@@ -60,7 +60,7 @@ CssToolsMinifier.prototype.processFilesForBundle = function (files, options) {
           data: minified
         });
       });
-    }
+    });
   }
 };
 

@@ -8,6 +8,7 @@ if (Meteor.isClient){
 
 Meteor.methods({
   setPrivate: function (taskId, setToPrivate) {
+
     var task = Tasks.findOne(taskId);
 
     // Make sure only the task owner can make a task private
@@ -15,6 +16,6 @@ Meteor.methods({
       throw new Meteor.Error("not-authorized");
     }
 
-    Tasks.update(taskId, { $set: { private: setToPrivate } });
+    Tasks.update(taskId, {$set: {private: setToPrivate}});
   }
 });

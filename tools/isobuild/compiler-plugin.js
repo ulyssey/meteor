@@ -579,7 +579,7 @@ export class PackageSourceBatch {
       // the code must access them with `Package["my-package"].MySymbol`.
       skipDebugOnly: true,
       skipProdOnly: true,
-      skipOnDemand: bundleArch === "web.browser",
+      skipOnDemand: self.processor.arch === "web.browser",
       // We only care about getting exports here, so it's OK if we get the Mac
       // version when we're bundling for Linux.
       allowWrongPlatform: true,
