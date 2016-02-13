@@ -30,7 +30,6 @@ UglifyJSMinifier.prototype.processFilesForBundle = function (files, options) {
   files.forEach(function (file) {
     if (file._source.onDemand) {
       packageName = file._source.packageName;
-      console.log("package onDemand: " + packageName);
       if (typeof jsClassified[packageName] === 'undefined') {
         jsClassified[packageName] = {files: []};
       }
@@ -52,7 +51,7 @@ UglifyJSMinifier.prototype.processFilesForBundle = function (files, options) {
   var someJs = '';
  
   if (files.length) {
-    for (var property = '' in jsClassified){
+    Object.getOwnPropertyNames(jsClassified).forEach(function(property) {
       current = jsClassified[property];
       someJs = '';
 
@@ -64,7 +63,7 @@ UglifyJSMinifier.prototype.processFilesForBundle = function (files, options) {
       });
 
       current.files[0].addJavaScript({ data: someJs });
-    }
+    });
   }
 };
 
