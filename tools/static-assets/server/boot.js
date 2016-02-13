@@ -132,8 +132,10 @@ var startCheckForLiveParent = function (parentPid) {
   }
 };
 
-var bootOneLoad = function(fileInfo){
-  var code = fs.readFileSync(path.resolve(serverDir, fileInfo.path));
+
+Fiber(function () {
+  _.each(serverJson.load, function (fileInfo) {
+    var code = fs.readFileSync(path.resolve(serverDir, fileInfo.path));
 
     var Npm = {
       /**
@@ -238,14 +240,6 @@ var bootOneLoad = function(fileInfo){
     // what require() uses to generate its errors.
     var func = require('vm').runInThisContext(wrapped, scriptPath, true);
     func.call(global, Npm, Assets); // Coffeescript
-  };
-
-Fiber(function () {
-  _.each(serverJson.load, function (fileInfo) {
-    //do not boot on-demand packages
-    if(!fileInfo.onDemand){
-      bootOneLoad(fileInfo);
-    }
   });
   // run the user startup hooks.  other calls to startup() during this can still
   // add hooks to the end.

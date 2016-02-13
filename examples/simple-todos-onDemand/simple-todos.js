@@ -17,6 +17,12 @@ if (Meteor.isServer) {
       return Meteor.user().username === 'chris';
     }
   });
+  console.log('myPrivate: ' + myPrivate);
+  console.log('myPrivate2: ' + myPrivate2);
+  console.log('OnDemand: ' + OnDemand);
+
+  //var myPrivate = Package["ulyssey:private-tag"].myPrivate;
+  myPrivate();
 }
 
 if (Meteor.isClient) {
