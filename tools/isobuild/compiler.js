@@ -672,9 +672,9 @@ function runLinters({inputSourceArch, isopackCache, sources,
     // the code must access them with `Package["my-package"].MySymbol`.
     skipDebugOnly: true,
     skipProdOnly: true,
-    //symbols from onDemand package must be only accessible by
+    //symbols from onDemand package on web browser must be accessed by
     // `Package["my-package"].MySymbol`.
-    skipOnDemand: true,
+    skipOnDemand: whichArch === "web.browser",
     // We only care about getting exports here, so it's OK if we get the Mac
     // version when we're bundling for Linux.
     allowWrongPlatform: true,
