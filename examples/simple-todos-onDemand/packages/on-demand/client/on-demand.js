@@ -40,7 +40,7 @@ OnDemand.load = function (packageName, callback) {
     //delay for handlebar to take in account a new template
     callback && Meteor.setTimeout(function () {
       callback(err, res);
-    },100);
+    },500);
   });
 };
 

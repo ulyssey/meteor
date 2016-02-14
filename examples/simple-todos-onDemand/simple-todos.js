@@ -14,7 +14,7 @@ if (Meteor.isServer) {
 
   OnDemand.conditions({
     'ulyssey:private-tag': function () {
-      return Meteor.user().username === 'chris';
+      return true;
     }
   });
 }
